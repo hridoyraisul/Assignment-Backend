@@ -21,6 +21,7 @@ if($user->username!=null){
             "username" => $user->username,
             "email" => $user->email,
             "role" => $user->role,
+            "token" => md5(rand()),
         ];
         http_response_code(200);
         echo json_encode($user_arr);

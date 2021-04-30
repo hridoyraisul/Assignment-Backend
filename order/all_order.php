@@ -1,19 +1,16 @@
 <?php
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Credentials: true");
-header('Content-Type: application/json');
+header("Content-Type: application/json; charset=UTF-8");
 include_once '../config/database.php';
-include_once '../objects/order.php';
 include_once '../objects/product.php';
+include_once '../objects/order.php';
+include_once '../objects/user.php';
 
 $database = new Database();
 $db = $database->getConnection();
 
-$order = new Order($db);
-$order->customer_id = isset($_GET['customer_id']) ? $_GET['customer_id'] : die();
-$stmt = $order->customersOrder();
+$porder = new Order($db);
+$stmt = $porder->readAllOrder();
 $num = $stmt->rowCount();
 if($num>0){
     $orders_arr= [];
@@ -22,6 +19,9 @@ if($num>0){
         $product = new Product($db);
         $product->id = $product_id;
         $product->readOne();
+        $customer = new User($db);
+        $customer->id = $customer_id;
+        $customer->customerInfo();
         if($product->name!=null){
             $items = [
                 "id" =>  $id,
@@ -30,6 +30,7 @@ if($num>0){
                 "total_price" => $price*$quantity,
                 "quantity" => $quantity,
                 "customer_id"=> $customer_id,
+                "customer_name" => $customer->username,
                 "status"=> $status,
                 "product_name" => $product->name,
                 "description" => $product->description,
@@ -41,10 +42,10 @@ if($num>0){
     }
     http_response_code(200);
     echo json_encode($orders_arr);
-} else{
+}
+else{
     http_response_code(404);
     echo json_encode(
         ["message" => "No products found."]
     );
 }
-?>

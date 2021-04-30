@@ -71,4 +71,10 @@ class Order{
         $stmt->execute();
         return $stmt;
     }
+    function readAllOrder(){
+        $query = "SELECT * FROM ". $this->table_name ." ORDER BY `id` DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
 }

@@ -11,7 +11,18 @@ class User{
     public function __construct($db){
         $this->conn = $db;
     }
-
+    function customerInfo(){
+        $query = "SELECT * FROM ". $this->table_name ." WHERE `id` = ? ";
+        $stmt = $this->conn->prepare( $query );
+        $stmt->bindParam(1, $this->id);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->id = $row['id'];
+        $this->username = $row['username'];
+        $this->email = $row['email'];
+        $this->password = $row['password'];
+        $this->role = $row['role'];
+    }
     function loginUser(){
         $query = "SELECT * FROM ". $this->table_name ." WHERE `email` = ? ";
         $stmt = $this->conn->prepare( $query );
